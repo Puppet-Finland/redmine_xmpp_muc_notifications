@@ -9,4 +9,20 @@
     <label><%= l(:xmpp_label_password) %></label>
     <%= password_field_tag "settings[jidpassword]", @settings["jidpassword"] %>
   </p>
+
+  <p>
+    <label><%= l(:xmpp_label_muc_room) %></label>
+    <%= password_field_tag "settings[muc_room]", @settings["muc_room"] %>
+  </p>
+
+  <p>
+    <label><%= l(:xmpp_label_muc_server) %></label>
+    <%= password_field_tag "settings[muc_server]", @settings["muc_server"] %>
+  </p>
+
+  <p>
+    <label><%= l(:xmpp_label_nickname) %></label>
+    <%= password_field_tag "settings[nickname]", @settings["nickname"] %>
+  </p>
+
 </fieldset>

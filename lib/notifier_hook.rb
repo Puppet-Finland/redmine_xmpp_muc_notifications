@@ -70,25 +70,37 @@ class NotifierHook < Redmine::Hook::Listener
     deliver text, issue
   end
   
-  
   private
-  
   
   def deliver(message, issue)
     config = Setting.plugin_redmine_xmpp_notifications
     begin
-      client = Jabber::Simple.new config["jid"], config["jidpassword"]
-      User.active.each do |user|
-      	if user.xmpp_jid.nil? || user.xmpp_jid == "" || !user.notify_about?(issue)
-	  next
-	end
-        client.deliver user.xmpp_jid, message
+      
+      if ( config["jid"].nil? || config["jid"] == "" \
+           config["jidpassword"].nil? || config["jidpassword"] == "" \
+           config["muc_room"].nil? || config["muc_room"] == "" \
+           config["muc_server"].nil? || config["muc_server"] == "" \
+           config["nickname"].nil? || config["nickname"] == "" )
+        return
       end
+      
+      # See https://github.com/xmpp4r/xmpp4r/blob/master/data/doc/xmpp4r/examples/basic/mucsimplebot.rb
+      client = Jabber::Client.new(Jabber::JID.new(config["jid"]))
+      client.connect
+      client.auth(config["jidpassword"])
+      
+      muc = Jabber::MUC::SimpleMUCClient.new(client)
+      room_jid = "#{config["muc_room"]}@#{config["muc_server"]}/#{config["nickname"]}"
+      muc.join(room_jid)
+      
+      muc.send Jabber::Message.new(muc.room, message)
+    end
     rescue
       ## Error connect XMPP or Error send message
       # RAILS_DEFAULT_LOGGER.error "XMPP Error: #{$!}"
     end
     client = nil
+    muc = nil
   end
   
 end

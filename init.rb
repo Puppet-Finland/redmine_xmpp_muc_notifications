@@ -1,24 +1,16 @@
 require "redmine"
 require "rubygems"
-require "xmpp4r-simple"
+require "xmpp4r"
+require "xmpp4r/muc/helper/simplemucclient"
 
 require_dependency "notifier_hook"
-require_dependency "my_account_hooks"
-require_dependency "user_hooks"
-require_dependency "user"
-
-if User.const_defined? "SAFE_ATTRIBUTES"
-    User::SAFE_ATTRIBUTES << "xmpp_jid"
-else
-    User.safe_attributes "xmpp_jid"
-end
 
 Redmine::Plugin.register :redmine_xmpp_notifications do
   name "Redmine XMPP Notifications plugin"
-  author "Pavel Musolin & Vadim Misbakh-Soloviov"
-  description "A plugin to sends Redmine Activity over XMPP"
+  author "Julien Malik, original code from Pavel Musolin & Vadim Misbakh-Soloviov"
+  description "A plugin to sends Redmine Activity over a XMPP MUC"
   version "1.0.0"
-  url "https://github.com/pmisters/redmine_xmpp_notifications"
+  url "https://github.com/YunoHost/redmine_xmpp_muc_notifications"
   
-  settings :default => {"jid" => "", "password" => ""}, :partial => "settings/xmpp_settings"
+  settings :default => {"jid" => "", "password" => "", "muc_room" => "", "muc_server" => "", "nickname" => ""}, :partial => "settings/xmpp_settings"
 end
