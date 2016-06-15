@@ -5,10 +5,10 @@ require "xmpp4r/muc/helper/simplemucclient"
 
 require_dependency "notifier_hook"
 
-Redmine::Plugin.register :redmine_xmpp_notifications do
-  name "Redmine XMPP Notifications plugin"
+Redmine::Plugin.register :redmine_xmpp_muc_notifications do
+  name "Redmine XMPP MUC Notifications plugin"
   author "Julien Malik, original code from Pavel Musolin & Vadim Misbakh-Soloviov"
-  description "A plugin to sends Redmine Activity over a XMPP MUC"
+  description "A plugin to send Redmine Activity over a XMPP MUC"
   version "1.0.0"
   url "https://github.com/YunoHost/redmine_xmpp_muc_notifications"
   

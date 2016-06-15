@@ -69,18 +69,18 @@ class NotifierHook < Redmine::Hook::Listener
 
     deliver text, issue
   end
-  
+
   private
-  
+
   def deliver(message, issue)
-    config = Setting.plugin_redmine_xmpp_notifications
+    config = Setting.plugin_redmine_xmpp_muc_notifications
     begin
       
       if ( config["jid"].nil? || config["jid"] == "" \
-           config["jidpassword"].nil? || config["jidpassword"] == "" \
-           config["muc_room"].nil? || config["muc_room"] == "" \
-           config["muc_server"].nil? || config["muc_server"] == "" \
-           config["nickname"].nil? || config["nickname"] == "" )
+           || config["jidpassword"].nil? || config["jidpassword"] == "" \
+           || config["muc_room"].nil? || config["muc_room"] == "" \
+           || config["muc_server"].nil? || config["muc_server"] == "" \
+           || config["nickname"].nil? || config["nickname"] == "" )
         return
       end
       
@@ -94,7 +94,6 @@ class NotifierHook < Redmine::Hook::Listener
       muc.join(room_jid)
       
       muc.send Jabber::Message.new(muc.room, message)
-    end
     rescue
       ## Error connect XMPP or Error send message
       # RAILS_DEFAULT_LOGGER.error "XMPP Error: #{$!}"
