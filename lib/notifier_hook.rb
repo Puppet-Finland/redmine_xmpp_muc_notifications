@@ -17,11 +17,11 @@ class NotifierHook < Redmine::Hook::Listener
     if @before_status != @after_status
       if @after_status == "Closed"
         action = "closed"
-      else if @after_status == "Resolved"
+      elsif @after_status == "Resolved"
         action = "resolved"
-      else if @after_status == "Rejected"
+      elsif @after_status == "Rejected"
         action = "rejected"
-      else if @after_status == "In Progress"
+      elsif @after_status == "In Progress"
         action = "reopened"
       end
     end
