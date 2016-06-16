@@ -31,7 +31,9 @@ class NotifierHook < Redmine::Hook::Listener
     html.add(html_body)
 
     message = Jabber::Message.new(nil, plaintext)
-    message.add_element(html)
+
+    # html does not render links well. there must be a bug somewhere. kept for later...
+    # message.add_element(html)
 
     return message
   end
