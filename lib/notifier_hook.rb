@@ -6,22 +6,22 @@ class NotifierHook < Redmine::Hook::Listener
 
   def controller_issues_edit_before_save(context={})
     issue = context[:issue]
-    @before_status = issue.status.name
   end
 
   def controller_issues_edit_after_save(context={})
     issue = context[:issue]
-    @after_status = issue.status.name
+    before_status = issue.status_was.name
+    after_status = issue.status.name
 
     action = "updated"
-    if @before_status != @after_status
-      if @after_status == "Closed"
+    if before_status != after_status
+      if after_status == "Closed"
         action = "closed"
-      elsif @after_status == "Resolved"
+      elsif after_status == "Resolved"
         action = "resolved"
-      elsif @after_status == "Rejected"
+      elsif after_status == "Rejected"
         action = "rejected"
-      elsif @after_status == "In Progress"
+      elsif after_status == "In Progress"
         action = "reopened"
       end
     end
