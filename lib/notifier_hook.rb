@@ -24,22 +24,34 @@ class NotifierHook < Redmine::Hook::Listener
     return message
   end
 
+  def make_client()
+    client = Jabber::Client.new(Jabber::JID.new(settings["jid"]))
+    client.connect
+    client.auth(settings["jidpassword"])
+    yield client
+  ensure
+    client.close
+  end
+
+  def make_muc(client)
+    muc = Jabber::MUC::SimpleMUCClient.new(client)
+    muc.join("#{settings["muc_room"]}@#{settings["muc_server"]}/#{settings["nickname"]}")
+    yield muc
+  ensure
+    muc.exit
+  end
+
   def deliver(message)
     begin
       # See https://github.com/xmpp4r/xmpp4r/blob/master/data/doc/xmpp4r/examples/basic/mucsimplebot.rb
-      client = Jabber::Client.new(Jabber::JID.new(settings["jid"]))
-      client.connect
-      client.auth(settings["jidpassword"])
-      
-      muc = Jabber::MUC::SimpleMUCClient.new(client)
-      muc.join("#{settings["muc_room"]}@#{settings["muc_server"]}/#{settings["nickname"]}")
-      muc.say(message)
-      muc.exit
+      make_client do |client|
+        make_muc(client) do |muc|
+          muc.say(message)
+        end
+      end
     rescue
       ## Error connect XMPP or Error send message
       # RAILS_DEFAULT_LOGGER.error "XMPP Error: #{$!}"
-    ensure
-      client.close
     end
   end
   
