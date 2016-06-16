@@ -20,7 +20,17 @@ class NotifierHook < Redmine::Hook::Listener
 
   def make_msg(issue, author, action, description="")
     redmine_url = "#{Setting[:protocol]}://#{Setting[:host_name]}"
-    message = "[redmine/#{issue.project}] @#{author} #{action} issue ##{issue.id} #{issue.subject} #{redmine_url}/issues/#{issue.id}"
+    plaintext = "[redmine/#{issue.project}] @#{author} #{action} issue ##{issue.id} : #{issue.subject} #{redmine_url}/issues/#{issue.id}"
+    
+    html = REXML::Element::new("html")).add_namespace(‘http://jabber.org/protocol/xhtml-im’)
+    html_body = REXML::Element::new("body").add_namespace(‘http://www.w3.org/1999/xhtml’)   
+    html_body_text = REXML::Text.new("[redmine/#{issue.project}] @#{author} #{action} issue <a href=\"#{redmine_url}/issues/#{issue.id}\">##{issue.id}</a> : #{issue.subject}")
+    html_body.add(t)
+    html.add(html_body)
+
+    message = Jabber::Message.new(nil, plaintext)
+    message.add_element(html)
+
     return message
   end
 
@@ -46,7 +56,7 @@ class NotifierHook < Redmine::Hook::Listener
       # See https://github.com/xmpp4r/xmpp4r/blob/master/data/doc/xmpp4r/examples/basic/mucsimplebot.rb
       make_client do |client|
         make_muc(client) do |muc|
-          muc.say(message)
+          muc.send(message)
         end
       end
     rescue
