@@ -43,9 +43,9 @@ class NotifierHook < Redmine::Hook::Listener
     redmine_url = "#{Setting[:protocol]}://#{Setting[:host_name]}"
     message = Jabber::Message.new
     message.type = "groupchat"
-    message.body = "[redmine/#{issue.project}] @#{author} #{action} issue ##{issue.id} : #{issue.subject} #{redmine_url}/issues/#{issue.id}"
+    message.body = "[redmine/#{issue.project}] @#{author} #{action} issue ##{issue.id} : #{issue.subject} [#{issue.status.name}] #{redmine_url}/issues/#{issue.id}"
     # http://xmpp.org/extensions/xep-0071.html
-    message.xhtml_body = "<p>[redmine/#{issue.project}] @#{author} #{action} issue <a href='#{redmine_url}/issues/#{issue.id}'>##{issue.id}</a> : #{issue.subject}</p>"
+    message.xhtml_body = "<p>[redmine/#{issue.project}] @#{author} #{action} issue <a href='#{redmine_url}/issues/#{issue.id}'>##{issue.id}</a> : #{issue.subject} [#{issue.status.name}]</p>"
     return message
   end
 
