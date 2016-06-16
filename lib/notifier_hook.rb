@@ -24,9 +24,10 @@ class NotifierHook < Redmine::Hook::Listener
     
     # http://xmpp.org/extensions/xep-0071.html
     html = REXML::Element::new("html").add_namespace("http://jabber.org/protocol/xhtml-im")
-    html_body = REXML::Element::new("body").add_namespace("http://www.w3.org/1999/xhtml")   
-    html_body_text = REXML::Text.new("<p>[redmine/#{issue.project}] @#{author} #{action} issue <a href=\"#{redmine_url}/issues/#{issue.id}\">##{issue.id}</a> : #{issue.subject}</p>")
-    html_body.add(html_body_text)
+    html_body = REXML::Element::new("body").add_namespace("http://www.w3.org/1999/xhtml")
+    html_body_p = REXML::Element::new("p")
+    html_body_p.add_text("[redmine/#{issue.project}] @#{author} #{action} issue <a href=\"#{redmine_url}/issues/#{issue.id}\">##{issue.id}</a> : #{issue.subject}")
+    html_body.add(html_body_p)
     html.add(html_body)
 
     message = Jabber::Message.new(nil, plaintext)
