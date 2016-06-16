@@ -4,26 +4,14 @@ class NotifierHook < Redmine::Hook::Listener
     deliver(make_msg(context[:issue], context[:issue].author.name, "created")) unless !validate_settings?
   end
 
-  def controller_issues_edit_before_save(context={})
-    issue = context[:issue]
-  end
-
   def controller_issues_edit_after_save(context={})
     issue = context[:issue]
-    before_status = issue.status_was.name
-    after_status = issue.status.name
 
     action = "updated"
-    if before_status != after_status
-      if after_status == "Closed"
-        action = "closed"
-      elsif after_status == "Resolved"
-        action = "resolved"
-      elsif after_status == "Rejected"
-        action = "rejected"
-      elsif after_status == "In Progress"
-        action = "reopened"
-      end
+    if issue.closing?
+      action = "closed"
+    elsif issue.reopening?
+      action = "reopened"
     end
 
     deliver(make_msg(context[:issue], context[:journal].user.name, action)) unless !validate_settings?
