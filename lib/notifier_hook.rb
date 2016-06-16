@@ -33,14 +33,13 @@ class NotifierHook < Redmine::Hook::Listener
       
       muc = Jabber::MUC::SimpleMUCClient.new(client)
       muc.join("#{settings["muc_room"]}@#{settings["muc_server"]}/#{settings["nickname"]}")
-      muc.send Jabber::Message.new(muc.room, message)
+      muc.say(message)
+      muc.exit
     rescue
       ## Error connect XMPP or Error send message
       # RAILS_DEFAULT_LOGGER.error "XMPP Error: #{$!}"
     ensure
       client.close
-      client = nil
-      muc = nil
     end
   end
   
