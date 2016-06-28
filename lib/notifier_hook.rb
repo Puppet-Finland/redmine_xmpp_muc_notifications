@@ -1,11 +1,19 @@
 class NotifierHook < Redmine::Hook::Listener
 
   def controller_issues_new_after_save(context={})
-    deliver(make_msg(context[:issue], context[:issue].author.name, "created")) unless !validate_settings?
+    begin
+      deliver(make_msg(context[:issue], context[:issue].author.name, "created")) unless !validate_settings?
+    rescue
+      # we don't want to crash redmine for a damned notification
+    end
   end
 
   def controller_issues_edit_after_save(context={})
-    deliver(make_msg(context[:issue], context[:journal].user.name, "updated")) unless !validate_settings?
+    begin
+      deliver(make_msg(context[:issue], context[:journal].user.name, "updated")) unless !validate_settings?
+    rescue
+      # we don't want to crash redmine for a damned notification
+    end
   end
 
   private
