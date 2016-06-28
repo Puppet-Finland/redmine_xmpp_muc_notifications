@@ -24,7 +24,8 @@ class NotifierHook < Redmine::Hook::Listener
     message.type = "groupchat"
     message.body = "[redmine/#{issue.project}] @#{author} #{action} issue ##{issue.id} : #{issue.subject} [#{issue.status.name}] #{redmine_url}/issues/#{issue.id}"
     # http://xmpp.org/extensions/xep-0071.html
-    message.xhtml_body = "<p>[redmine/#{issue.project}] @#{author} #{action} issue <a href='#{redmine_url}/issues/#{issue.id}'>##{issue.id}</a> : #{issue.subject} [#{issue.status.name}]</p>"
+    issue_subject_html = html_escape("#{issue.subject}")
+    message.xhtml_body = "<p>[redmine/#{issue.project}] @#{author} #{action} issue <a href='#{redmine_url}/issues/#{issue.id}'>##{issue.id}</a> : #{issue_subject_html} [#{issue.status.name}]</p>"
     return message
   end
 
