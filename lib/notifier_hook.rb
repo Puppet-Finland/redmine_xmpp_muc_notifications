@@ -3,8 +3,9 @@ class NotifierHook < Redmine::Hook::Listener
   def controller_issues_new_after_save(context={})
     begin
       deliver(make_msg(context[:issue], context[:issue].author.name, "created")) unless !validate_settings?
-    rescue
+    rescue => e
       # we don't want to crash redmine for a damned notification
+      notify_error(e)
     end
   end
 
@@ -13,11 +14,17 @@ class NotifierHook < Redmine::Hook::Listener
       deliver(make_msg(context[:issue], context[:journal].user.name, "updated")) unless !validate_settings?
     rescue
       # we don't want to crash redmine for a damned notification
+      notify_error(e)
     end
   end
 
   private
 
+  def notify_error(e)
+    logger.error "XMPP Notification Hook error => exception #{e.class.name} : #{e.message}"
+    flash[:error] = "Exception caught while delivering notification to XMPP channel"
+  end
+  
   def settings
     @settings ||= Setting.plugin_redmine_xmpp_muc_notifications
   end
@@ -55,16 +62,11 @@ class NotifierHook < Redmine::Hook::Listener
   end
 
   def deliver(message)
-    begin
-      # See https://github.com/xmpp4r/xmpp4r/blob/master/data/doc/xmpp4r/examples/basic/mucsimplebot.rb
-      make_client do |client|
-        make_muc(client) do |muc|
-          muc.send(message)
-        end
+    # See https://github.com/xmpp4r/xmpp4r/blob/master/data/doc/xmpp4r/examples/basic/mucsimplebot.rb
+    make_client do |client|
+      make_muc(client) do |muc|
+        muc.send(message)
       end
-    rescue
-      ## Error connect XMPP or Error send message
-      # RAILS_DEFAULT_LOGGER.error "XMPP Error: #{$!}"
     end
   end
   
